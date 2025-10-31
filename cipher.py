@@ -11,21 +11,21 @@ import sys
 
 ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-def egcd(a, b): ##Extended GCD. Returns (g, x, y) such that a*x + b*y = g = gcd(a,b).
+def egcd(a, b): #Extended GCD. Returns (g, x, y) such that a*x + b*y = g = gcd(a,b).
     if a == 0:
         return (b, 0, 1)
     else:
         g, y, x = egcd(b % a, a)
         return (g, x - (b // a) * y, y)
 
-def modinv(a, m): ##Return modular inverse of a mod m, or None if none exists.
+def modinv(a, m): #Return modular inverse of a mod m, or None if none exists.
     g, x, _ = egcd(a, m)
     if g != 1:
         return None
     else:
         return x % m
 
-def sanitize_char(c): ##Return uppercase letter index 0..25 or None for non-letter.
+def sanitize_char(c): #Return uppercase letter index 0-25 or None for non-letter.
     if c.isalpha():
         return ord(c.upper()) - ord('A')
     return None
@@ -35,7 +35,7 @@ def affine_encrypt(plaintext, a, b):
     for ch in plaintext:
         i = sanitize_char(ch)
         if i is None:
-            output.append(ch)  #leave spaces/punctuation unchanged
+            output.append(ch)  #keep spaces/punctuation
         else:
             ciph_i = (a * i + b) % 26
             out_char = ALPHABET[ciph_i]
@@ -44,8 +44,6 @@ def affine_encrypt(plaintext, a, b):
 
 def affine_decrypt(ciphertext, a, b):
     a_inv = modinv(a, 26)
-    #if a_inv is None:
-    #    raise ValueError("a has no modular inverse modulo 26")
     output = []
     for ch in ciphertext:
         i = sanitize_char(ch)
@@ -57,7 +55,7 @@ def affine_decrypt(ciphertext, a, b):
             output.append(out_char if ch.isupper() else out_char.lower()) #keep case
     return ''.join(output)
 
-def valid_a_values(): #Return values 1..25 that are coprime to 26.
+def valid_a_values(): #Return values 1-25 that are coprime to 26.
     return [x for x in range(1, 26) if math.gcd(x, 26) == 1]
 
 def choose_random_key():
@@ -85,7 +83,7 @@ def main():
     print("Anna Prack Affine Cipher")
     plaintext = input("Enter the plaintext to encrypt: ").rstrip("\n")
 
-    # choose a hidden key
+    #hidden keys
     a_secret, b_secret = choose_random_key()
     ciphertext = affine_encrypt(plaintext, a_secret, b_secret)
 
